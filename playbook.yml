@@ -1,0 +1,44 @@
+- name: Main Playbook
+  hosts: localhost
+  become: false
+
+  vars:
+    fedora_version: 40
+    arch: x86_64
+
+  tasks:
+    - name: Install packages dnf
+      become: true
+      dnf5:
+        state: present
+        name:
+          - vim-enhanced
+          - flatpak
+          - gcc
+          - cmake
+          - rustup
+
+    # Docker tools and containers
+    # Based on https://docs.docker.com/engine/install/fedora/
+    # and looking at the stable repos details inside https://download.docker.com/linux/fedora/docker-ce.repo
+    # to avoid installing dnf-plugins-core
+    - name: Configure Docker RPM repository
+      become: true
+      yum_repository:
+        name: docker-ce-stable
+        description: Docker CE Stable - {{ arch }}
+        baseurl: "https://download.docker.com/linux/fedora/{{ fedora_version }}/{{ arch }}/stable"
+        gpgkey: https://download.docker.com/linux/fedora/gpg
+        repo_gpgcheck: yes
+        gpgcheck: yes
+
+    - name: Install packages dnf docker
+      become: true
+      dnf5:
+        state: present
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
