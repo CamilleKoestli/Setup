@@ -7,6 +7,8 @@
     arch: x86_64
 
   tasks:
+
+  # DNF PACKAGES
     - name: Install packages dnf
       become: true
       dnf5:
@@ -42,3 +44,40 @@
           - containerd.io
           - docker-buildx-plugin
           - docker-compose-plugin
+
+  # FLATPAK PACKAGES
+    - name: Add the flathub flatpak repository remote to the user installation
+      community.general.flatpak_remote:
+        name: flathub
+        state: present
+        flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+        method: user
+
+    - name: Install packages flatpak
+      flatpak:
+        state: present
+        method: user
+        name:
+          - "org.telegram.desktop"
+
+  # RUST PACKAGES
+    - name: Install rustup
+      become: true
+      command:
+        cmd: "rustup-init -y"
+      args:
+        creates: "{{ansible_env.HOME}}/.cargo/bin/rustc"
+
+    - name: Install cargo
+      become: true
+      community.general.cargo:
+        cmd: "cargo install cargo-binstall"
+
+    - name: Binstall packages cargo
+      become: true
+      vars:
+        items: 
+          - "gitui"
+          - "tlrc"
+      shell:
+        cmd: "cargo binstall {{ items | join(' ') }} -y --locked --continue-on-failure"
