@@ -10,15 +10,72 @@
 
   # DNF PACKAGES
     - name: Install packages dnf
+      register: dnf_result
       become: true
       dnf5:
         state: present
         name:
+          # Fedora
+          - ansible
+          #- "xclip" ## For VSCodium extension "Dendron image paste"
+          #- snapd
+          #- "vrms-rpm" # Virtual RMS that enable listing non free packages
+          #- "touchegg" # Enable trackpad gestures service
+          - "neofetch" # Show nice info about your Linux machine
+          - "pavucontrol" # Pulse Audio Volume Control - precise audio I/O software
+          - "chromium" # ?
+          - flameshot
+          #- "calibre"
+
+          # Terminal productivity
+          # TODO: continue to comment why I use all these packages for
+          - fish
+          - kitty
+          - zoxide
+          - yq 
+          - jq
+          - tmate
+          #- ranger
+          - bat
+          - eza
+          - tree
+          - fd-find
+          - htop
+          - icat
+          - ifuse
+          - jxrlib
+          - "fswatch" # for Pest
+          - fzf
+          - gh
+          - git
+          - git-delta
+
+          # Files and others
+          #- "gnucash" # ?
+          #- "gnucash-docs" # ?
+          - keepassxc
+          # - libreoffice
+          - pandoc
+          - testdisk
+          #- syncthing
+          - tlp
+          - tlp-rdw
+
+          # Networking
+          - telnet
+          - whois
+          - wireshark
+          - nmap
+          - opendyslexic-fonts
+          - netcat
           - vim-enhanced
           - flatpak
           - gcc
           - cmake
           - rustup
+
+    - name: Show DNF results
+      debug: msg={{ dnf_result.results }}
 
     # Docker tools and containers
     # Based on https://docs.docker.com/engine/install/fedora/
@@ -44,6 +101,14 @@
           - containerd.io
           - docker-buildx-plugin
           - docker-compose-plugin
+    
+    - name: Starting docker systemd service
+      become: true
+      service:
+        name: docker
+        state: started
+        enabled: true
+
 
   # FLATPAK PACKAGES
     - name: Add the flathub flatpak repository remote to the user installation
@@ -58,7 +123,44 @@
         state: present
         method: user
         name:
-          - "org.telegram.desktop"
+           # Productivity
+          #- "com.bitwarden.desktop" # Bitwarden - synced password manager
+          - "com.github.jeromerobert.pdfarranger" # PDF Arranger - Quickly arrange PDF pages, files, merge, split, remove, order, into new PDF.
+          - "com.github.johnfactotum.QuickLookup" # Quick Lookup is a simple dictionnary
+          # org.standardnotes.standardnotes # E2EE synced notes taking tool
+          - "org.freefilesync.FreeFileSync" # Great synchronization tool between 2 folders
+          #- com.github.Eloston.UngoogledChromium 
+          - "com.github.micahflee.torbrowser-launcher" # The TOR Browser
+          - "net.ankiweb.Anki" # Memorisation tool with deck of cards
+          - "com.github.dynobo.normcap" # OCR local client
+          #- "com.github.joseexposito.touche" # Configure trackpad gestures like 3 fingers pinch
+          # - "com.rustdesk.RustDesk" # TODO: from RPM file...
+          - "com.uploadedlobster.peek" # Peek - Very easy GIF/MP4 recorder
+          - "dev.geopjr.Calligraphy" # ASCII art generator in a big list of fonts, essential for any TUI project
+          - "org.gnome.baobab" # Disk Usage Analyser - Show nice chart of what use how much
+          # io.github.troyeguo.koodo-reader # Koodo reader - books/pdf reader
+          # com.github.paolostivanin.OTPClient # OTP Client with encrypted local DB
+          - "com.visualstudio.code"
+          - "com.discordapp.Discord"
+          - "org.zotero.Zotero"
+
+          # Social
+          - "org.davmail.DavMail" # Exchange protocole bridge
+          #- "org.mozilla.Thunderbird" # The famous email client
+          #- "com.github.vladimiry.ElectronMail" # Protonmail Electron client
+          - "org.telegram.desktop" # Native Telegram Desktop app
+          #- "org.signal.Signal" # Signal Desktop
+          #- "org.jitsi.jitsi-meet" # Electron Jisti Meet client
+          # im.riot.Riot # Element (Matrix client)
+
+          # Fedora
+          - "com.github.tchx84.Flatseal" # Flatseal help to manage flatpak apps permissions
+          - "org.kde.isoimagewriter" # Iso Image Writer - Burn ISO image in a USB stick, like Balena Etcher, but even simpler
+
+          # Visualisation and math
+          - "org.gnome.Calculator" # GNOME calculator is way better than KCalc on numerous aspects
+          # - "org.geogebra.GeoGebra" # GeoGebra - geometry visualisation
+          # - "com.jgraph.drawio.desktop" # DrawIO Electron wrapper for easier file saving
 
   # RUST PACKAGES
     - name: Install rustup
@@ -77,7 +179,21 @@
       become: true
       vars:
         items: 
-          - "gitui"
-          - "tlrc"
-      shell:
+          - cargo-update # package to update these packages
+          # - deduplicator # Find duplicated files: https://github.com/sreedevk/deduplicator
+          - gitui@0.26.1 # The best Git TUI IMHO :) https://github.com/extrawurst/gitui
+          # - html2pdf # Easier way to convert any HTML to PDF (using headless chrome/chromium) without the Print Menu in Firefox
+          # - mdcat # Markdown preview with colors in the terminal
+          - rustlings # ruslings runner to practice Rust with small exos - https://rustlings.cool/
+          # - spotify_player # Rust TUI for Spotify - https://github.com/aome510/spotify-player
+          - tlrc # TLDR.sh Rust Client - https://tldr.sh/tlrc/
+
+          # # Yazi - blazing fast terminal file manager written in Rust, based on async I/O.
+          # # https://yazi-rs.github.io/
+          - yazi-cli
+          - yazi-fm
+
+          ## Others tools not used directly
+          - cargo-make # Use make with Cargo, I use this to build espanso
+      command:
         cmd: "cargo binstall {{ items | join(' ') }} -y --locked --continue-on-failure"
