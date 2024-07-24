@@ -164,19 +164,19 @@
 
   # RUST PACKAGES
     - name: Install rustup
-      become: true
       command:
         cmd: "rustup-init -y"
       args:
         creates: "{{ansible_env.HOME}}/.cargo/bin/rustc"
 
-    - name: Install cargo
-      become: true
+    - name: Install cargo-binstall
       community.general.cargo:
-        cmd: "cargo install cargo-binstall"
+        name: "cargo-binstall"
+        executable: "{{ansible_env.HOME}}/.cargo/bin/cargo"
 
     - name: Binstall packages cargo
-      become: true
+      environment:
+        PATH: "{{ansible_env.HOME}}/.cargo/bin:{{ansible_env.PATH}}"
       vars:
         items: 
           - cargo-update # package to update these packages
