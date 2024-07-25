@@ -73,6 +73,10 @@
           - gcc
           - cmake
           - rustup
+          - python3-pip
+          - dnf5
+          - java-21-openjdk
+          - neovim
 
     - name: Show DNF results
       debug: msg={{ dnf_result.results }}
@@ -146,7 +150,7 @@
 
           # Social
           - "org.davmail.DavMail" # Exchange protocole bridge
-          #- "org.mozilla.Thunderbird" # The famous email client
+          - "org.mozilla.Thunderbird" # The famous email client
           #- "com.github.vladimiry.ElectronMail" # Protonmail Electron client
           - "org.telegram.desktop" # Native Telegram Desktop app
           #- "org.signal.Signal" # Signal Desktop
@@ -216,6 +220,7 @@
         - { file: todoist, name: Todoist, url: https://app.todoist.com/app/today, icon: https://app.todoist.com/app/manifest_icons/icon_180x180.d0c3ef3c6be29a9ca57ead5171bbebc4.png }
         #- { file: syncthing, name: Syncthing, url:  http://localhost:8384/, icon: https://iconduck.com/api/v2/vectors/vctrz0e28f8u/media/png/256/download }
         - { file: typst, name: Typst, url: https://typst.app/, icon: https://typst.app/assets/android-chrome-512x512.png }
+        - { file: whatsapp, name: WhatsApp, url: https://web.whatsapp.com/, icon: https://static.whatsapp.net/rsrc.php/v3/yw/r/WDR7jNjkVfM.png }
 
     - name: Download icons of PWA
       get_url:
