@@ -259,6 +259,41 @@
       loop: "{{ pwas.results }}"
 
 
+    # Tasks strongely related to the OS, here Fedora
+    # Validate the sudoers file before saving
+    - name: Change sudo timeout to 30
+      become: true
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: 'Defaults\s+timestamp_timeout=.*'
+        line: 'Defaults    timestamp_timeout=30'
+        validate: '/usr/sbin/visudo -cf %s'
+
+    - name: Make DNF choose fastest mirror
+      become: true
+      lineinfile:
+        path: /etc/dnf/dnf.conf
+        state: present
+        regexp: 'fastestmirror=.*'
+        line: 'fastestmirror=True'
+
+    - name: Make DNF choose fastest mirror
+      become: true
+      lineinfile:
+        path: /etc/dnf/dnf.conf
+        state: present
+        regexp: 'max_parallel_downloads=.*'
+        line: 'max_parallel_downloads=10'
+
+    - name: Make DNF choose fastest mirror
+      become: true
+      lineinfile:
+        path: /etc/dnf/dnf.conf
+        state: present
+        regexp: 'installonly_limit=.*'
+        line: 'installonly_limit=5'
+
 # App a faire manuellement : antidote
 
 
