@@ -197,3 +197,30 @@
           - cargo-make # Use make with Cargo, I use this to build espanso
       command:
         cmd: "cargo binstall {{ items | join(' ') }} -y --locked --continue-on-failure"
+
+
+    # Setup PWA in correct folders opened via chromium
+    # This creates one .desktop file per PWA in ~/.local/share/applications
+    # TODO: fix icon not working fully
+    - name: PWA folder definition
+      set_fact:
+        base_pwa: "{{ ansible_env.HOME }}/.local/share/applications/"
+
+    - name: PWA setup launched with Chromium
+      register: pwas
+      template:
+        src: pwa.desktop.j2
+        dest: "{{ base_pwa }}{{ item.file }}.desktop"
+      loop:
+        - { file: teams, name: Teams, url: https://teams.microsoft.com/v2/?clientType=pwa, icon: https://statics.teams.cdn.office.net/hashed/favicon/prod/favicon-512x512-8d51633.png }
+        - { file: todoist, name: Todoist, url: https://app.todoist.com/app/today, icon: https://app.todoist.com/app/manifest_icons/icon_180x180.d0c3ef3c6be29a9ca57ead5171bbebc4.png }
+        #- { file: syncthing, name: Syncthing, url:  http://localhost:8384/, icon: https://iconduck.com/api/v2/vectors/vctrz0e28f8u/media/png/256/download }
+        - { file: typst, name: Typst, url: https://typst.app/, icon: https://typst.app/assets/android-chrome-512x512.png }
+
+    - name: Download icons of PWA
+      get_url:
+        url: "{{ item.item.icon }}"
+        dest: ~/.local/share/applications/{{ item.item.file }}.png
+      loop: "{{ pwas.results }}"
+
+
