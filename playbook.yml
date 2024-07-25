@@ -113,6 +113,18 @@
         state: started
         enabled: true
 
+    # Docker desktop https://docs.docker.com/desktop/install/fedora/
+    - name : Download docker desktop rpm
+      get_url :
+        url: https://desktop.docker.com/linux/main/amd64/docker-desktop-x86_64.rpm?
+        dest: /tmp
+
+    - name : Install docker desktop
+      become: true
+      dnf5 :
+        disable_gpg_check: yes
+        name : "/tmp/docker-desktop-{{ arch }}.rpm"
+
 
   # FLATPAK PACKAGES
     - name: Add the flathub flatpak repository remote to the user installation
@@ -227,5 +239,8 @@
         url: "{{ item.item.icon }}"
         dest: ~/.local/share/applications/{{ item.item.file }}.png
       loop: "{{ pwas.results }}"
+
+
+# App a faire manuellement : antidote
 
 
