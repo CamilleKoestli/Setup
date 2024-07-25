@@ -81,6 +81,25 @@
     - name: Show DNF results
       debug: msg={{ dnf_result.results }}
 
+    # Installation vscode dnf
+    - name: Configuration VS Code rpm repo
+      become: true
+      yum_repository:
+        name: VisualStudioCode
+        description: Visual Studio Code dnf
+        baseurl: "https://packages.microsoft.com/yumrepos/vscode"
+        gpgkey: "https://packages.microsoft.com/keys/microsoft.asc"
+        repo_gpgcheck: yes
+        gpgcheck: yes
+
+    - name: Install vscode
+      register: dnf_result
+      become: true
+      dnf5:
+        state: present
+        name:
+          - code
+
     # Docker tools and containers
     # Based on https://docs.docker.com/engine/install/fedora/
     # and looking at the stable repos details inside https://download.docker.com/linux/fedora/docker-ce.repo
@@ -156,7 +175,6 @@
           - "org.gnome.baobab" # Disk Usage Analyser - Show nice chart of what use how much
           # io.github.troyeguo.koodo-reader # Koodo reader - books/pdf reader
           # com.github.paolostivanin.OTPClient # OTP Client with encrypted local DB
-          - "com.visualstudio.code"
           - "com.discordapp.Discord"
           - "org.zotero.Zotero"
 
