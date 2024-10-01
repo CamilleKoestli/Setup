@@ -203,6 +203,16 @@
       args:
         creates: "{{ansible_env.HOME}}/.cargo/bin/rustc"
 
+    - name: Update rustup and install latest stable rust
+      command: "{{ ansible_env.HOME }}/.cargo/bin/rustup update stable"
+
+    - name: Install OpenSSL development libraries
+      yum:
+        name: openssl-devel
+        state: present
+      become: yes
+
+
     - name: Install cargo-binstall
       community.general.cargo:
         name: "cargo-binstall"
@@ -251,6 +261,7 @@
         #- { file: syncthing, name: Syncthing, url:  http://localhost:8384/, icon: https://iconduck.com/api/v2/vectors/vctrz0e28f8u/media/png/256/download }
         - { file: typst, name: Typst, url: https://typst.app/, icon: https://typst.app/assets/android-chrome-512x512.png }
         - { file: whatsapp, name: WhatsApp, url: https://web.whatsapp.com/, icon: https://static.whatsapp.net/rsrc.php/v3/yw/r/WDR7jNjkVfM.png }
+        - { file: onenote, name: OneNote, url: https://www.onenote.com/notebooks?auth=2&nf=1, icon: https://play-lh.googleusercontent.com/3Wr_nlhRHjIGfPd-BNUbgffLfxPPqNW8GFPscqnQ4t2aPRyKlFMuXT4yhb-PSMsHgss=w240-h480 }
 
     - name: Download icons of PWA
       get_url:
@@ -294,6 +305,17 @@
         regexp: 'installonly_limit=.*'
         line: 'installonly_limit=5'
 
-# App a faire manuellement : antidote
+    # warning: symlink may be missing: ln -s /var/lib/snapd/snap /snap
+    - name: Install snapd
+      yum:
+        name: snapd
+        state: present
+      become: true
 
+    - name: Install snap packages (gradle) # warning: old version of gradle ! use sdkman if it's an issue
+      become: true
+      community.general.snap:
+        classic: true
+        name:
+            - gradle
 
